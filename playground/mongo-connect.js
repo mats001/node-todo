@@ -6,15 +6,27 @@ MongoClient.connect('mongodb://localhost:27017/TodoAppData',(err,client)=>{
     }
     const db=client.db('TodoAppData');
     console.log('Succesfully Connected to Mongo Server');
-    db.collection('Todos').insertOne({
-      text:'Talk the  talk',
-      complete:true,
-    },(err,result)=>{
-      if (err){
-        return console.log('Unable to create collection Tods');
+const insertRec =(text,compFlag)=>{
+  db.collection('Todos').insertOne({
+     text:text,
+     complete:compFlag,
+   },(err,result)=>{
+     if (err){
+       return console.log('Unable to create collection Tods');
+     }
+     console.log(JSON.stringify(result.ops,undefined,2));
+   });
+}
+  for (let i=1;i<10;i++){
+      let text=`This is my Todo number ${i}`
+      if (i==1||i==5||i==8){
+        compFlag=false
+      }else{
+        compFlag=true;
       }
-      console.log(JSON.stringify(result.ops,undefined,2));
-    });
+      insertRec(text,compFlag)
+  }
+
     // db.collection('Users').insertOne({
     //   name:'Vinod Mathew',
     //   age:51,
