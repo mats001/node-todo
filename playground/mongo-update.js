@@ -11,14 +11,15 @@ MongoClient.connect('mongodb://localhost:27017/TodoAppData',(err,client)=>{
       //   console.log(result);
       // })
       db.collection('Users').findOneAndUpdate({
-        _id: new ObjectID('5b6d5871b77493661c3b61ef')
+        _id: new ObjectID('5ba538a4f857e372c8810ef4')
       },{
           $set:{name:"Anil Mathew"},
           $inc:{age:2}
 
       },{
-        returnOriginal: false
+        returnOriginal: true
       }).then((result)=>{
         console.log(result);
+        client.close();
       })
   });

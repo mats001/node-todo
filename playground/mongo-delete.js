@@ -10,9 +10,11 @@ MongoClient.connect('mongodb://localhost:27017/TodoAppData',(err,client)=>{
       // db.collection('Users').deleteMany({name:"Vinod Mathew"}).then((result)=>{
       //   console.log(result);
       // })
-      db.collection('Users').findOneAndDelete({
-        _id: new ObjectID('5b6de324c9f73636c4ce8ccd')
+      db.collection('Users').deleteMany({
+        // _id: new ObjectID('5b6de324c9f73636c4ce8ccd')
+        name:"Anil Mathew"
       }).then((result)=>{
         console.log(result);
+        client.close()
       })
   });
