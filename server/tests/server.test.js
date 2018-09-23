@@ -5,12 +5,18 @@ const {app} = require('./../server') ;
 const {Todo} = require('./../models/todos');
 
 // delete all data from the database before each test
+let myTodos=[
+  {text:"My story 2"},
+  {text:"My story 3"}
+];
 beforeEach((done)=>{
-  Todo.remove({}).then(()=>{
-    done()
-  });
-});
+ Todo.remove({}).then(()=>{
+   return Todo.insertMany((myTodos)).then(()=>{
+     done();
+   })
+ })
 
+});
 describe('POST/todos',()=>{
   it('Should create a new todo',(done)=>{
     // sample test string setup for the test
@@ -33,7 +39,7 @@ describe('POST/todos',()=>{
           return done(err)
         }
         // search for the data from the data base of the record matches assuming only one record
-        Todo.find().then((todos)=>{
+        Todo.find(sendText).then((todos)=>{
           expect1(todos.length).toBe(1);   // all records delted on top so only one record
           expect1(todos[0].text).toBe(sendText.text);  // record value should match
           done()
@@ -43,3 +49,15 @@ describe('POST/todos',()=>{
       });   // end end
   }); // it shhold create a new todo end
 }); // describe end
+
+describe('GET/todos',()=>{
+  it('Should Get all todos',(done)=>{
+    supertest1(app)
+      .get('/todos')
+      .expect(200)
+      .expect((res)=>{
+        expect1(res.body.todos.length).toBe(2);
+      })
+      .end(done)
+  })
+})
