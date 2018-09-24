@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParsser = require('body-parser');
-
-const {mongoose} = require('./db/mongoose');
+const {ObjectID} = require('mongodb');
+const {mongoose} = require('./db/mongoose');  // this is the  mongoose.js created locally
 const {Todo} = require('./models/todos');
 const {users} = require('./models/users');
 // setup express as the app
@@ -37,5 +37,23 @@ app.get('/todos',(req,res)=>{
   },(err)=>{
     res.send(err)
   });
+});
+app.get('/todos/:id',(req,res)=>{
+  let id = req.params.id;
+  if (!ObjectID.isValid(id)){
+    // res.status(400);
+    // res.send()
+    // return
+    return res.status(400).send()
+  }
+  //
+  Todo.findById(id).then((doc)=>{
+    let myDoc =[{result:"sending doc"},doc]
+    return res.send(myDoc)
+  }).catch((err)=>{
+    return res.status(404)
+    //res.send()
+  });
+
 });
 module.exports={app}
