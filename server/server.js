@@ -25,7 +25,7 @@ app.post('/todos',(req,res)=>{
   });
 });
 app.listen(port,()=>{
-  console.log('lstening on 3000')
+  console.log(`Starting on port ${port}`)
 });
 app.get('/todos',(req,res)=>{
   Todo.find().then((todos)=>{
