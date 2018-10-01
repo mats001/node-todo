@@ -51,9 +51,38 @@ app.get('/todos/:id',(req,res)=>{
     let myDoc =[{result:"sending doc"},doc]
     return res.send(myDoc)
   }).catch((err)=>{
-    return res.status(404)
-    //res.send()
+     res.status(404)
+    return res.send()
   });
 
+});
+app.delete('/todos/:id',(req,res)=>{
+  let id = req.params.id;
+  if (!ObjectID.isValid(id)){
+    res.status(404) ;
+    return res.send("Not a valid Id");
+  }
+  console.log(`id is ${id}`) ;
+  Todo.findById(id).then((doc)=>{
+    if(!doc){
+      console.log(`Not found doc`) ;
+      res.status(404) ;
+      return res.send();
+    }
+    console.log(`found doc ${doc}`) ;
+    Todo.findByIdAndDelete(id).then((doc) =>{
+      console.log(`remove doc ${doc}`) ;
+      if(!doc || doc== ""){
+        console.log(`remove doc1`) ;
+         res.status(404) ;
+         return res.send();
+      }
+      console.log(`remove doc 2`,doc) ;
+      return res.send(doc)
+    }).catch((e)=>{
+      res.status(404) ;
+      return res.send();
+    });
+  });
 });
 module.exports={app}
