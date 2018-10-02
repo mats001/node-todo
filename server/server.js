@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParsser = require('body-parser');
+const _ = require('lodash');   // for picking select values from the body
 const {ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');  // this is the  mongoose.js created locally
 const {Todo} = require('./models/todos');
@@ -66,23 +67,48 @@ app.delete('/todos/:id',(req,res)=>{
   Todo.findById(id).then((doc)=>{
     if(!doc){
       console.log(`Not found doc`) ;
-      res.status(404) ;
-      return res.send();
+      return res.status(404).send();   // chain
     }
     console.log(`found doc ${doc}`) ;
     Todo.findByIdAndDelete(id).then((doc) =>{
       console.log(`remove doc ${doc}`) ;
       if(!doc || doc== ""){
         console.log(`remove doc1`) ;
-         res.status(404) ;
-         return res.send();
+         return res.status(404).send();
       }
       console.log(`remove doc 2`,doc) ;
       return res.send(doc)
     }).catch((e)=>{
-      res.status(404) ;
-      return res.send();
+      return res.status(404).send();
     });
   });
+});
+app.patch('/todos/:id',(req,res)=>{
+  let id = req.params.id ;
+  if (!ObjectID.isValid(id)){
+    return res.status(400).send("Not a valid Id");
+  }
+  // use low dash to only pick select key values from the body and set in a body array
+  let body = _.pick(req.body,['text','complete']) ;
+  // if completed is Boolean and true then sent completedAt as timestamp
+  if (_.isBoolean(body.complete) && body.complete){
+    body.completedAt = new Date().getTime()
+  }else{
+    body.completedAt=null,
+    body.complete = false
+  }
+  // now findOneAndUpdate
+  // use mongoosd set funtion to set values.
+  // the body variable has all the needed variable set above
+  // new : true to send the new record as return value
+  Todo.findByIdAndUpdate(id,{$set:body, new:true}).then((doc)=>{
+    // call back
+    if (!doc){
+      return res.status(404).send()
+    }
+    return res.send({doc})
+  }).catch((err)=>{
+    return res.status(404).send()
+  })
 });
 module.exports={app}
