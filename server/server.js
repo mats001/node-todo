@@ -1,3 +1,4 @@
+require('./config/config')
 const express = require('express');
 const bodyParsser = require('body-parser');
 const _ = require('lodash');   // for picking select values from the body
@@ -7,7 +8,7 @@ const {Todo} = require('./models/todos');
 const {users} = require('./models/users');
 // setup express as the app
 const app = express();
-let port = process.env.PORT || 3000 ;
+let port = process.env.PORT ;
 // set bodyParsser to parse the req to JSON
 app.use(bodyParsser.json());
 app.post('/todos',(req,res)=>{
