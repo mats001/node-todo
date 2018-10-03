@@ -3,7 +3,7 @@ const env = process.env.NODE_ENV || "development"
 if (env === "development"){
     process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/TodoAppData' ;
     process.env.PORT = 3000;
-}else if (evn === "test"){
+}else if (env === "test"){
   process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/TodoAppDataTest' ;
   process.env.PORT = 3000;
 }else {
