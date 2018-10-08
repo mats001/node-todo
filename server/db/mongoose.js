@@ -7,4 +7,4 @@ module.exports={
   mongoose
 }
 
-console.log('hello')
+console.log('Connected to Mongoose')

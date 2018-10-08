@@ -6,6 +6,7 @@ const {ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');  // this is the  mongoose.js created locally
 const {Todo} = require('./models/todos');
 const {User} = require('./models/users');
+const {authenticate} = require('./middleware/authenticate')
 // setup express as the app
 const app = express();
 let port = process.env.PORT ;
@@ -141,5 +142,10 @@ app.get('/users',(req,res)=>{
   }).catch((err)=>{
     return res.status(404).send()
   })
+});
+
+//authenticate will run before req and req will be  sent from authenticate
+app.get('/users/me',authenticate,(req,res)=>{
+  res.send(req.user)
 });
 module.exports={app}

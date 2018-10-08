@@ -49,6 +49,7 @@ UserSchema.methods.toJSON = function(){
   // user lodash pic funtion
   return _.pick(userObject,['name','email','_id'])
 }
+// methods are instance methods
 UserSchema.methods.generateAuthToken = function(){
   // we cannot use ES6 arrow fuction as it does not support 'this'
   // method gets called as an instance method and we need to use 'this' to get values of the instance
@@ -72,5 +73,28 @@ UserSchema.methods.generateAuthToken = function(){
       return token ;
     })
 }
+// statics are Class Metods
+UserSchema.statics.findByToken = function(token){
+// uper case'U" denotes ModelMtehod (class method)
+  var User = this  ; // this is The model not the instance
+  //console.log("token",token)
+  var decoded ;
+  try{
+    decoded = jwt.verify(token,'Secret123');
+  }catch (err){
+    console.log(`Err1 : =${err}`)
+    return new Promise((resolve,reject)=>{
+      // reject triggers the error case in the calling fuction
+      reject();
+    });
+  }
+  console.log(`Decoded =${decoded._id}`)
+  return User.findOne({
+    '_id':decoded._id,
+    'tokens.token':token,
+    'tokens.access':'auth'
+  });
+
+};
 let User = mongoose.model('User',UserSchema);
 module.exports={User}
