@@ -5,7 +5,7 @@ const _ = require('lodash');   // for picking select values from the body
 const {ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');  // this is the  mongoose.js created locally
 const {Todo} = require('./models/todos');
-const {users} = require('./models/users');
+const {User} = require('./models/users');
 // setup express as the app
 const app = express();
 let port = process.env.PORT ;
@@ -108,6 +108,36 @@ app.patch('/todos/:id',(req,res)=>{
       return res.status(404).send()
     }
     return res.send({doc})
+  }).catch((err)=>{
+    return res.status(404).send()
+  })
+});
+app.post('/users',(req,res)=>{
+    let body = _.pick(req.body,['name','email','password']) ;
+    let user = new User({
+      name:body.name,
+      email:body.email,
+      password:body.password
+    });
+    //console.log({body});
+    user.save().then(()=>{
+      //res.send(doc);
+      // get user token
+      return user.generateAuthToken();
+      // once you return it goes to the next then with the return from the previous call
+    }).then((token)=>{
+      // settin header ('x-auth') will send token in header
+      res.header('x-auth',token).send(user) ;
+    }).catch((err)=>{
+      res.status(400).send(err) ;
+    })
+})
+app.get('/users',(req,res)=>{
+  User.find().then((users)=>{
+    if (!users){
+      return res.status(404).send()
+    }
+    res.send(users)
   }).catch((err)=>{
     return res.status(404).send()
   })
